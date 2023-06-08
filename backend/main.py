@@ -2,16 +2,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import mysql.connector
-
+from core import config
 import uvicorn
 app = FastAPI()
 
 # Kết nối đến cơ sở dữ liệu MySQL
 db = mysql.connector.connect(
-    host="127.0.0.1",
-    user="Admin",
-    password="admin",
-    database="Faces"
+    host=config.HOST,
+    user=config.USER,
+    password=config.PASSWORD,
+    database=config.DATABASE
 )
 
 # Tạo mô hình dữ liệu Pydantic cho người dùng
