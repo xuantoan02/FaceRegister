@@ -1,6 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
-from Backend.core import config
+from backend.core import config
 
 
 class RegisterFace:
