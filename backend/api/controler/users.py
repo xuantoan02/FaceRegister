@@ -5,6 +5,12 @@ dbUser = UserManager(config.HOST, config.DATABASE, config.ADMIN, config.PASSWORD
 
 
 async def register_user(user: User):
-    message = dbUser.create_user(user)
-    if message is not None:
-        return {"message": "User registered successfully"}
+    message = None
+    if user:
+        user_registered = dbUser.get_user(user.user_name)
+        if user_registered:
+            message = "User already exists"
+        else:
+            message = dbUser.create_user(user)
+
+    return {"message": message}

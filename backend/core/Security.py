@@ -1,5 +1,5 @@
 from passlib.context import CryptContext
-import config
+from core import config
 
 
 class HashAlgorithm:

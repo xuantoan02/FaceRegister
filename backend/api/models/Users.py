@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 from pydantic import BaseModel
+from core.Security import HashAlgorithm
 
 
 class User(BaseModel):
@@ -34,19 +35,40 @@ class UserManager:
             self.connection.close()
             print('Connection closed.')
 
-    def create_user(self, user: User):
-        message = None
+    def get_user(self, user_name):
+        row: tuple = ()
         try:
             self.connect()
             cursor = self.connection.cursor()
 
-            insert_query = f"INSERT INTO {self.name_table} (user_name, password) VALUES (%s, %s)"
-            values = (user.user_name, user.password)
+            select_query = f"SELECT * FROM  {self.name_table} WHERE user_name = '{user_name}' LIMIT 1"
+            cursor.execute(select_query)
+            row = cursor.fetchone()
+            self.connection.commit()
+            if row:
+                print(f"get user {user_name} success")
+            else:
+                print(f"{user_name} not exit")
+        except Error as e:
+            print(f'Error while get user: {e}')
+        finally:
+            if self.connection.is_connected():
+                cursor.close()
+        return row
 
+    def create_user(self, user: User):
+
+        message = None
+        try:
+            self.connect()
+            cursor = self.connection.cursor()
+            insert_query = f"INSERT INTO {self.name_table} (user_name, password) VALUES (%s, %s)"
+            password_hash = HashAlgorithm().get_password_hash(user.password, 22)
+
+            values = (user.user_name, password_hash)
             cursor.execute(insert_query, values)
             self.connection.commit()
             message = f'{cursor.rowcount} user(s) created successfully.'
-            print(message)
 
         except Error as e:
             print(f'Error while creating user: {e}')

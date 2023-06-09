@@ -1,14 +1,17 @@
-import React from 'react';
+import React ,{ useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 
 function App() {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const [response, setResponse] = useState("");
 
   const onSubmit = async (data) => {
     try {
-      await axios.post('http://localhost:8000/register', data);
-      alert('User registered successfully');
+      const response=await axios.post('http://localhost:8000/register', data);
+      console.log(response.data);
+
+      alert(response.data["message"])
     } catch (error) {
       alert('An error occurred');
     }
