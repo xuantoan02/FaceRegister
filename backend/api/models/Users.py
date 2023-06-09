@@ -1,20 +1,27 @@
 import mysql.connector
 from mysql.connector import Error
+from pydantic import BaseModel
 
 
-class UserDatabase:
-    def __init__(self, host, database, user, password):
+class User(BaseModel):
+    user_name: str
+    password: str
+
+
+class UserManager:
+    def __init__(self, host, database, admin, password, name_table):
         self.host = host
         self.database = database
-        self.user = user
+        self.admin = admin
         self.password = password
+        self.name_table = name_table
 
     def connect(self):
         try:
             self.connection = mysql.connector.connect(
                 host=self.host,
                 database=self.database,
-                user=self.user,
+                user=self.admin,
                 password=self.password
             )
             if self.connection.is_connected():
@@ -27,31 +34,34 @@ class UserDatabase:
             self.connection.close()
             print('Connection closed.')
 
-    def create_user(self, username, password):
+    def create_user(self, user: User):
+        message = None
         try:
             self.connect()
             cursor = self.connection.cursor()
 
-            insert_query = "INSERT INTO users (username, password) VALUES (%s, %s)"
-            values = (username, password)
+            insert_query = f"INSERT INTO {self.name_table} (user_name, password) VALUES (%s, %s)"
+            values = (user.user_name, user.password)
 
             cursor.execute(insert_query, values)
             self.connection.commit()
+            message = f'{cursor.rowcount} user(s) created successfully.'
+            print(message)
 
-            print(f'{cursor.rowcount} user(s) created successfully.')
         except Error as e:
             print(f'Error while creating user: {e}')
         finally:
             if self.connection.is_connected():
                 cursor.close()
                 self.disconnect()
+            return message
 
     def update_user(self, user_id, new_password):
         try:
             self.connect()
             cursor = self.connection.cursor()
 
-            update_query = "UPDATE users SET password = %s WHERE id = %s"
+            update_query = f"UPDATE {self.name_table} SET password = %s WHERE id = %s"
             values = (new_password, user_id)
 
             cursor.execute(update_query, values)
@@ -70,7 +80,7 @@ class UserDatabase:
             self.connect()
             cursor = self.connection.cursor()
 
-            delete_query = "DELETE FROM users WHERE id = %s"
+            delete_query = f"DELETE FROM {self.name_table} WHERE id = %s"
             value = (user_id,)
 
             cursor.execute(delete_query, value)
@@ -83,16 +93,3 @@ class UserDatabase:
             if self.connection.is_connected():
                 cursor.close()
                 self.disconnect()
-
-
-# Sử dụng lớp UserDatabase để thao tác với cơ sở dữ liệu
-db = UserDatabase(host='your_host', database='your_database', user='your_user', password='your_password')
-
-# Thêm mới người dùng
-db.create_user(username='john_doe', password='password123')
-
-# Chỉnh sửa thông tin người dùng
-db.update_user(user_id=1, new_password='new_password')
-
-# Xóa người dùng
-db.delete_user(user_id=1)

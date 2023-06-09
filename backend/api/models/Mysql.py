@@ -5,6 +5,7 @@ from backend.core import config
 
 class RegisterFace:
     def __init__(self):
+        print("âa")
 
 
 try:
