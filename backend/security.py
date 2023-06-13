@@ -1,32 +1,16 @@
-from fastapi.security import HTTPBearer
-from datetime import datetime
-import jwt
-from fastapi.security import HTTPBearer
-from pydantic import ValidationError
-from fastapi import Depends,HTTPException
+import requests
+from jose import JWTError, jwt
+url = "http://0.0.0.0:8000/protected"
 
+payload = {}
+headers = {
+  'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE2ODY2Mjk2NDV9.PSzA99WcT7F9RgiUZGVtgvn_thhs8nznDg6zqVn753M'
+}
 
-SECURITY_ALGORITHM = 'HS256'
-SECRET_KEY = '123456'
+response = requests.request("GET", url, headers=headers, data=payload)
 
-reusable_oauth2 = HTTPBearer(
-    scheme_name='Authorization'
-)
+print(response.text)
 
-
-def validate_token(http_authorization_credentials=Depends(reusable_oauth2)) -> str:
-
-    """
-    Decode JWT token to get username => return username
-    """
-    try:
-        payload = jwt.decode(http_authorization_credentials.credentials, SECRET_KEY, algorithms=[SECURITY_ALGORITHM])
-        print(payload)
-        if payload.get('username'):
-            raise HTTPException(status_code=403, detail="Token expired")
-        return payload.get('username')
-    except(jwt.PyJWTError, ValidationError):
-        raise HTTPException(
-            status_code=403,
-            detail=f"Could not validate credentials",
-        )
+a=jwt.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE2ODY2Mjk2NDV9.PSzA99WcT7F9RgiUZGVtgvn_thhs8nznDg6zqVn753M", "123456", algorithms=["HS256"])
+z=jwt.encode({'sub': 'adsaa'}, "123456", algorithm="HS256")
+print(z)
