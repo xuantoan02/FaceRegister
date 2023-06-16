@@ -1,43 +1,52 @@
-import React ,{ useState } from 'react';
-import { useForm } from 'react-hook-form';
-import axios from 'axios';
 
-function App() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const [response, setResponse] = useState("");
-
-  const onSubmit = async (data) => {
-    try {
-      const response=await axios.post('http://localhost:8000/register', data);
-      console.log(response.data);
-
-      alert(response.data["message"])
-    } catch (error) {
-      alert('An error occurred');
-    }
-  };
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Register from "./Register";
+import Login from "./component/Login"
 
 
+
+
+
+const App = () => {
   return (
-    <div>
-      <h1>User Registration</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <label>Username</label>
-          <input {...register('user_name', { required: true, minLength: 3, maxLength: 20 })} />
-          {errors.username && <span>Username is required and must be between 3 and 20 characters</span>}
-        </div>
-        <div>
-          <label>Password</label>
-          <input {...register('password', { required: true, minLength: 6 })} />
-          {errors.password && <span>Password is required and must be at least 6 characters</span>}
-        </div>
-        <div>
-          <button type="submit">Register</button>
-        </div>
-      </form>
-    </div>
+    <Router>
+      <Switch>
+
+        <Route path="/Login" component={Login} />
+        <Route path="/Register" component={Register} />
+      </Switch>
+    </Router>
   );
-}
+};
 
 export default App;
+
+
+
+
+// const App1 = () => {
+//   const [email, setEmail] = useState("")
+//   const [password, setPassword] = useState("")
+  
+// const login = () => {
+//   console.log("Info:", email, password)
+// }
+//   return (
+//     <div>
+//       <App2/>
+//       <input value={email} onChange={(e) => {setEmail(e.target.value)}} />
+//       <input value={password} onChange={(e) => {setPassword(e.target.value)}} />
+
+// <button onClick={login}>Login</button>
+//       {email}
+//       {password}
+//     </div>
+//   )
+// }
+// export default App1;
+
+
+
+
+
