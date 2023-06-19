@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Register from "./Register";
-import Login from "./component/Login"
+import Register from "./component/register/Signup";
+// import Login from "./component/Login"
 
 
 
@@ -13,7 +13,7 @@ const App = () => {
     <Router>
       <Switch>
 
-        <Route path="/Login" component={Login} />
+        {/* <Route path="/Login" component={Login} /> */}
         <Route path="/Register" component={Register} />
       </Switch>
     </Router>

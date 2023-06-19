@@ -1,7 +1,7 @@
 from core import config
 from ..models.Users import User, UserManager
 from core.Security import HashAlgorithm
-from fastapi import HTTPException,Depends
+from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from core.Authentication import AuthUser
@@ -9,7 +9,7 @@ from datetime import timedelta
 from jose import JWTError, jwt
 
 authUser = AuthUser()
-dbUser = UserManager(config.HOST, config.DATABASE, config.ADMIN, config.PASSWORD, config.NAME_TABLE_USER)
+dbUser = UserManager(config.NAME_TABLE_USER)
 
 
 async def register_user(user: User):
@@ -38,7 +38,6 @@ async def login_user(user: User):
 async def protected_route(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
     try:
         payload = jwt.decode(credentials.credentials, config.SECRET_KEY, algorithms=[config.SECURITY_ALGORITHM])
-        print(credentials.credentials)
         username = payload.get("sub")
         if username is None:
             raise HTTPException(status_code=401, detail="Invalid token")

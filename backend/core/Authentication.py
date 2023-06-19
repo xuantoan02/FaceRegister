@@ -6,7 +6,6 @@ from core.config import SECRET_KEY, SECURITY_ALGORITHM
 from jose import jwt
 
 
-
 class AuthUser:
     def __init__(self):
         self.hash_a = HashAlgorithm()

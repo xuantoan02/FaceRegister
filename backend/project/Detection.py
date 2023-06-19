@@ -10,10 +10,15 @@ class Detection:
         self.app = FaceAnalysis(providers=['CUDAExecutionProvider', 'CUDAExecutionProvider'],
                                 allowed_modules=['detection'])
         self.app.prepare(ctx_id=0, det_size=(640, 640))
-        self.a=21
-    def get_faces(self, image):
-        faces = self.app.get(image)
-        return faces
+
+    def get_faces_bbox(self, image):
+        face_bbox = self.app.get(image)
+        bbox=[]
+        if face_bbox:
+            for face in face_bbox:
+                if face['det_score']>0.6:
+                    bbox.append(face['bbox'].astype('int'))
+        return bbox
 
     @staticmethod
     def angle_with_x_axis(line):
@@ -58,8 +63,3 @@ class Detection:
                 cv2.imwrite(f"../test/faces/{i}.jpg", img_r)
             i += 1
             cv2.rectangle(image, (bbox[0], bbox[1]), ([bbox[2], bbox[3]]), (255, 255, 0), 3)
-        cv2.imshow("a", image)
-        cv2.waitKey()
-
-
-
