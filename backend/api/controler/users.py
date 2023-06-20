@@ -25,8 +25,9 @@ async def register_user(user: User):
 
 
 async def login_user(user: User):
+
     user_login = dbUser.get_user(user.user_name)
-    if not user_login or not HashAlgorithm().verify_password(user.user_name, user_login[2]):
+    if not user_login or not HashAlgorithm().verify_password(user.password, user_login[3]):
         raise HTTPException(status_code=401, detail="Invalid username or password")
     access_token = authUser.create_access_token(
         data={"sub": user.user_name},

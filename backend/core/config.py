@@ -1,10 +1,10 @@
 DETECTION_MODEL = "a"
 HOST = "127.0.0.1"
-DATABASE = 'Faces'
+DATABASE = 'face'
 ADMIN = 'Admin'
 PASSWORD = 'admin'
-NAME_TABLE_USER = "Users"
-NAME_TABLE_FACE = "face_register"
+NAME_TABLE_USER = "User"
+NAME_TABLE_FACE = "FaceRegister"
 SECURITY_ALGORITHM = 'HS256'
 SECRET_KEY = '123456'
 HASH_SIZE = 22

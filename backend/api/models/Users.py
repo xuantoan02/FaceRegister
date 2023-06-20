@@ -6,6 +6,7 @@ from core import config
 
 
 class User(BaseModel):
+    email: str = None
     user_name: str
     password: str
 
@@ -42,39 +43,54 @@ class FaceManager(Db):
     def __init__(self, name_table):
         super().__init__(name_table)
 
-    def create_face_feature(self, user_name,feature):
-
+    def create_face_feature(self, user_name, feature):
         message = None
         self.connect()
         cursor = self.connection.cursor()
-        # try:
-        insert_query = f"INSERT INTO {self.name_table} (NAME, FEATURE) VALUES (%s, %s)"
-        values = (user_name, feature)
-        cursor.execute(insert_query, values)
-        self.connection.commit()
-        message = f'{cursor.rowcount} face created successfully.'
-
-        # except Error as e:
-        print(f'Error while creating user: a')
-        # finally:
-        if self.connection.is_connected():
-            cursor.close()
-            self.disconnect()
+        try:
+            insert_query = f"INSERT INTO {self.name_table} (id_user, feature) VALUES (%s, %s)"
+            values = (user_name, feature)
+            cursor.execute(insert_query, values)
+            self.connection.commit()
+            message = f'{cursor.rowcount} face created successfully.'
+        except Error as e:
+            print(f'Error while creating user: {e}')
+        finally:
+            if self.connection.is_connected():
+                cursor.close()
+                self.disconnect()
         return message
+
+    def update_face_feature(self, user_id, new_feature):
+        self.connect()
+        cursor = self.connection.cursor()
+        try:
+            update_query = f"UPDATE {self.name_table} SET feature = %s WHERE id_user = %s"
+            values = (new_feature, user_id)
+
+            cursor.execute(update_query, values)
+            self.connection.commit()
+
+            print(f'{cursor.rowcount} user(s) updated successfully.')
+        except Error as e:
+            print(f'Error while updating user: {e}')
+        finally:
+            if self.connection.is_connected():
+                cursor.close()
+                self.disconnect()
 
 
 class UserManager(Db):
     def __init__(self, name_table):
         super().__init__(name_table)
 
-
-
     def get_user(self, user_name):
         row: tuple = ()
         self.connect()
         cursor = self.connection.cursor()
         try:
-            select_query = f"SELECT * FROM  {self.name_table} WHERE user_name = '{user_name}' LIMIT 1"
+            print(user_name)
+            select_query = f"SELECT * FROM  {self.name_table} WHERE name = '{user_name}' LIMIT 1"
             cursor.execute(select_query)
             row = cursor.fetchone()
             self.connection.commit()
@@ -95,10 +111,9 @@ class UserManager(Db):
         self.connect()
         cursor = self.connection.cursor()
         try:
-            insert_query = f"INSERT INTO {self.name_table} (user_name, password) VALUES (%s, %s)"
+            insert_query = f"INSERT INTO {self.name_table} (name,email, password) VALUES (%s,%s, %s)"
             password_hash = HashAlgorithm().get_password_hash(user.password, 22)
-
-            values = (user.user_name, password_hash)
+            values = (user.user_name, user.email, password_hash)
             cursor.execute(insert_query, values)
             self.connection.commit()
             message = f'{cursor.rowcount} user(s) created successfully.'
@@ -115,7 +130,7 @@ class UserManager(Db):
         self.connect()
         cursor = self.connection.cursor()
         try:
-            update_query = f"UPDATE {self.name_table} SET password = %s WHERE id = %s"
+            update_query = f"UPDATE {self.name_table} SET password = %s WHERE id_user = %s"
             values = (new_password, user_id)
 
             cursor.execute(update_query, values)
@@ -133,7 +148,7 @@ class UserManager(Db):
         self.connect()
         cursor = self.connection.cursor()
         try:
-            delete_query = f"DELETE FROM {self.name_table} WHERE id = %s"
+            delete_query = f"DELETE FROM {self.name_table} WHERE id_user = %s"
             value = (user_id,)
 
             cursor.execute(delete_query, value)
