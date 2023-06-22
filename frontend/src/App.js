@@ -1,8 +1,9 @@
 
 
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Register from "./component/register/Signup";
-// import Login from "./component/Login"
+import Register from "./Register";
+import Login from "./Login"
+import UploadAvatar from "./component/UploadAvt"
 
 
 
@@ -13,8 +14,9 @@ const App = () => {
     <Router>
       <Switch>
 
-        {/* <Route path="/Login" component={Login} /> */}
+        <Route path="/Login" component={Login} />
         <Route path="/Register" component={Register} />
+        <Route path="/upload-avt" component={UploadAvatar} />
       </Switch>
     </Router>
   );

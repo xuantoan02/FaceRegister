@@ -13,10 +13,10 @@ class Detection:
 
     def get_faces_bbox(self, image):
         face_bbox = self.app.get(image)
-        bbox=[]
+        bbox = []
         if face_bbox:
             for face in face_bbox:
-                if face['det_score']>0.6:
+                if face['det_score'] > 0.6:
                     bbox.append(face['bbox'].astype('int'))
         return bbox
 

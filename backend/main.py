@@ -11,3 +11,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(routers.user)
+
+
+# uvicorn m:ainmain --reload
