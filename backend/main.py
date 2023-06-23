@@ -13,4 +13,4 @@ app.add_middleware(
 app.include_router(routers.user)
 
 
-# uvicorn m:ainmain --reload
+# uvicorn main:app --reload

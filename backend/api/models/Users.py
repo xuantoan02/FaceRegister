@@ -28,31 +28,28 @@ class Db:
                 user=self.admin,
                 password=self.password
             )
-            if self.connection.is_connected():
-                print('Connected to MySQL database')
         except Error as e:
             print(f'Error while connecting to MySQL: {e}')
 
     def disconnect(self):
         if self.connection.is_connected():
             self.connection.close()
-            print('Connection closed.')
 
 
 class FaceManager(Db):
     def __init__(self, name_table):
         super().__init__(name_table)
 
-    def create_face_feature(self, user_name, feature):
+    def create_face_feature(self, id_user, feature):
         message = None
         self.connect()
         cursor = self.connection.cursor()
         try:
-            insert_query = f"INSERT INTO {self.name_table} (id_user, feature) VALUES (%s, %s)"
-            values = (user_name, feature)
+            insert_query = f"INSERT INTO {self.name_table} (user_id, feature) VALUES (%s, %s)"
+            values = (id_user, feature)
             cursor.execute(insert_query, values)
             self.connection.commit()
-            message = f'{cursor.rowcount} face created successfully.'
+            message = f'face_feature of {id_user} created successfully.'
         except Error as e:
             print(f'Error while creating user: {e}')
         finally:
@@ -61,17 +58,32 @@ class FaceManager(Db):
                 self.disconnect()
         return message
 
+    def get_user(self, user_id):
+        row: tuple = ()
+        self.connect()
+        cursor = self.connection.cursor()
+        try:
+            select_query = f"SELECT * FROM  {self.name_table} WHERE user_id = '{user_id}' LIMIT 1"
+            cursor.execute(select_query)
+            row = cursor.fetchone()
+            self.connection.commit()
+        except Error as e:
+            print(f'Error while get user: {e}')
+        finally:
+            if self.connection.is_connected():
+                cursor.close()
+        return row
+
     def update_face_feature(self, user_id, new_feature):
         self.connect()
         cursor = self.connection.cursor()
         try:
-            update_query = f"UPDATE {self.name_table} SET feature = %s WHERE id_user = %s"
+            update_query = f"UPDATE {self.name_table} SET feature = %s WHERE user_id = %s"
             values = (new_feature, user_id)
 
             cursor.execute(update_query, values)
             self.connection.commit()
 
-            print(f'{cursor.rowcount} user(s) updated successfully.')
         except Error as e:
             print(f'Error while updating user: {e}')
         finally:
@@ -89,15 +101,10 @@ class UserManager(Db):
         self.connect()
         cursor = self.connection.cursor()
         try:
-            print(user_name)
             select_query = f"SELECT * FROM  {self.name_table} WHERE name = '{user_name}' LIMIT 1"
             cursor.execute(select_query)
             row = cursor.fetchone()
             self.connection.commit()
-            if row:
-                print(f"get user {user_name} success")
-            else:
-                print(f"{user_name} not exit")
         except Error as e:
             print(f'Error while get user: {e}')
         finally:
@@ -116,7 +123,7 @@ class UserManager(Db):
             values = (user.user_name, user.email, password_hash)
             cursor.execute(insert_query, values)
             self.connection.commit()
-            message = f'{cursor.rowcount} user(s) created successfully.'
+            message = f'{user.user_name} created successfully.'
 
         except Error as e:
             print(f'Error while creating user: {e}')
@@ -126,17 +133,15 @@ class UserManager(Db):
                 self.disconnect()
             return message
 
-    def update_user(self, user_id, new_password):
+    def update_user(self, id_user, new_password):
         self.connect()
         cursor = self.connection.cursor()
         try:
-            update_query = f"UPDATE {self.name_table} SET password = %s WHERE id_user = %s"
-            values = (new_password, user_id)
+            update_query = f"UPDATE {self.name_table} SET password = %s WHERE id = %s"
+            values = (new_password, id_user)
 
             cursor.execute(update_query, values)
             self.connection.commit()
-
-            print(f'{cursor.rowcount} user(s) updated successfully.')
         except Error as e:
             print(f'Error while updating user: {e}')
         finally:
@@ -144,17 +149,16 @@ class UserManager(Db):
                 cursor.close()
                 self.disconnect()
 
-    def delete_user(self, user_id):
+    def delete_user(self, id_user):
         self.connect()
         cursor = self.connection.cursor()
         try:
-            delete_query = f"DELETE FROM {self.name_table} WHERE id_user = %s"
-            value = (user_id,)
+            delete_query = f"DELETE FROM {self.name_table} WHERE id = %s"
+            value = (id_user,)
 
             cursor.execute(delete_query, value)
             self.connection.commit()
 
-            print(f'{cursor.rowcount} user(s) deleted successfully.')
         except Error as e:
             print(f'Error while deleting user: {e}')
         finally:

@@ -12,7 +12,9 @@ class FaceRegister(Recognize, Detection):
         self.userDb = UserManager(config.NAME_TABLE_USER)
         self.faceDb = FaceManager(config.NAME_TABLE_FACE)
 
-    def face_register(self, name, path_image):
+    def face_register(self, user_id, path_image):
+
+        row = self.faceDb.get_user(user_id)
         image = cv2.imread(path_image)
         bbox = self.get_faces_bbox(image)
         if len(bbox) == 0:
@@ -21,11 +23,17 @@ class FaceRegister(Recognize, Detection):
             face = image[bbox[0][1]:bbox[0][3], bbox[0][0]:bbox[0][2]]
             face_feature = self.get_feature(face)
             face_feature = face_feature.tolist()
-            self.faceDb.create_face_feature(name, str(face_feature))
-            message = ""
+            face_feature = str(face_feature)
+            if not row:
+                self.faceDb.create_face_feature(user_id, face_feature)
+            else:
+                self.faceDb.update_face_feature(user_id, face_feature)
+            message = "登録が成功しました"
         else:
             message = "たくさんの顔があります"
 
+        return {
+            "message": message
+        }
 
-a = FaceRegister()
-a.face_register("a", "test/images/5bb593ac913178da78227dc32799ded1.jpg")
+
