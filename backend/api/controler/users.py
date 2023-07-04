@@ -56,7 +56,4 @@ async def upload_image(image: UploadFile = File(...), id_user: str = Form(...)):
     with open(path_img, "wb") as f:
         f.write(contents)
     a = faceRegister.face_register(id_user, path_img)
-
-    print(a)
-
     return a

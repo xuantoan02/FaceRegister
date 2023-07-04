@@ -1,1 +1,1 @@
-from project.FaceRegister import *
+from project.Recognize import *

@@ -24,6 +24,16 @@ function Signup  () {
       .oneOf([Yup.ref('password'), null], 'Password must match')
       .required('Confirm password is required'),
     })
+
+    try {
+      const response = await axios.post('http://localhost:8000/register', data);
+      console.log(response.data)
+      alert(response.data.message);
+    } catch (error) {
+      alert('An error occurred');
+    }
+  };
+
   
   return (
 

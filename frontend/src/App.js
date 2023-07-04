@@ -1,54 +1,44 @@
 
-
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Register from "./Register";
 import Login from "./Login"
 import UploadAvatar from "./component/UploadAvt"
+import Admin from "./component/Admin"
+import ProtectedRoute from "./component/ProtectedRoute"
+import HomePage from "./component/HomePage"
+
+
+// const App = () => {
+//   return (
+//     <Router>
+
+//       <Routes>
+//         <Route exact path="/" element={<HomePage />} />
+//         <Route path="/Login" element={<Login/>} />
+//         <Route path="/Register" element={<Register/>} />
+//         <ProtectedRoute path="/Upload-avt" element={<UploadAvatar/>} />
+//         <ProtectedRoute path="/Admin" element={<Admin/>} />
+//       </Routes>
+//     </Router>
+//   );
+// };
+
+// export default App;
 
 
 
-
-
-const App = () => {
+export default function App() {
   return (
     <Router>
-      <Switch>
-
-        <Route path="/Login" component={Login} />
-        <Route path="/Register" component={Register} />
-        <Route path="/upload-avt" component={UploadAvatar} />
-      </Switch>
+      
+      <Routes>
+        <Route exact path="/" element={<HomePage />} />
+        <Route path="/Login" element={<Login />} />
+        <Route path="/Register" element={<Register />} />
+        <Route path="/Admin" element={<ProtectedRoute element={<Admin />} />} />
+        {/* <ProtectedRoute path="/Upload-avt" component={UploadAvatar} />*/}
+        {/* <Route path="/Admin" element={< ProtectedRoute element={<Admin/>} />} /> */}
+      </Routes>
     </Router>
   );
-};
-
-export default App;
-
-
-
-
-// const App1 = () => {
-//   const [email, setEmail] = useState("")
-//   const [password, setPassword] = useState("")
-  
-// const login = () => {
-//   console.log("Info:", email, password)
-// }
-//   return (
-//     <div>
-//       <App2/>
-//       <input value={email} onChange={(e) => {setEmail(e.target.value)}} />
-//       <input value={password} onChange={(e) => {setPassword(e.target.value)}} />
-
-// <button onClick={login}>Login</button>
-//       {email}
-//       {password}
-//     </div>
-//   )
-// }
-// export default App1;
-
-
-
-
-
+}
